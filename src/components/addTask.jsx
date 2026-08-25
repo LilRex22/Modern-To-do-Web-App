@@ -3,33 +3,64 @@ import { X } from "lucide-react";
 import axios from "axios";
 import MessageBox from "./message";
 
-function AddTask({ onClose }) {
+
+function AddTask({ onClose, onTaskCreated }) {
     const [message, setMessage] = useState(null)
+    const [error, setError] = useState({});
     const [formData, setFormData] = useState({
         Title: "",
         Description: "",
         Due_date: "",
         Time: "",
         Priority: "Low",
-        Category: "Work"
+        Category: 1
     })
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        const { name, value } = e.target;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: name === "Category" ? Number(value) : value,
+        }));
     };
 
     const handleSubmit = async (e)=>{
         e.preventDefault();
+        setError({});
+        setMessage(null);
+
+        const newErrors = {};
+
+        if (!formData.Title.trim()) {
+            newErrors.Title = ["Task title is required."];
+        }
+
+        if (!formData.Description.trim()) {
+            newErrors.Description = ["Description is required."];
+        }
+
+        if (!formData.Due_date) {
+            newErrors.Due_date = ["Due date is required."];
+        }
+
+        if (!formData.Time) {
+            newErrors.Time = ["Time is required."];
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setError(newErrors);
+            return;
+        }
+
         try{
-            const response = await axios.post('http://localhost:8000/dashboard/create_task', formData
-                // {
-                //     headers: {
-                //         Authorization: `Bearer ${token}`,
-                //     },
-                // }
+            const token = localStorage.getItem("access");
+            const response = await axios.post('http://localhost:8000/dashboard/create_task', formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
                 )
             console.log(response)
             console.log(formData)
@@ -45,15 +76,25 @@ function AddTask({ onClose }) {
                 Due_date: "",
                 Time: "",
                 Priority: "High",
-                Category: "Work"
+                Category: 1
             })
+
+            setTimeout(() => {
+                onTaskCreated();
+            }, 1500);
+
         }catch(err){
             console.log(err.response.data)
             console.log(formData)
-            setMessage({
-                text: err.response.data.Title || "An error occurred while adding the task.",
-                type: "error"
-            });
+            
+            if (err.response?.data) {
+                setError(err.response.data);
+            } else {
+                setMessage({
+                    text: "An error occurred while adding the task.",
+                    type: "error",
+                });
+            }
         }
     }
 
@@ -84,8 +125,17 @@ function AddTask({ onClose }) {
                     onChange={handleChange}
                     type="text"
                     placeholder="What needs to be done?"
-                    className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-indigo-400"
+                    className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-700 outline-none ${
+                            error.Title
+                                ? "border-red-400"
+                                : "border-slate-200"
+                        }`}
                     />
+                    {error.Title && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {error.Title[0]}
+                        </p>
+                    )}
                 </div>
 
                 <div>
@@ -97,8 +147,17 @@ function AddTask({ onClose }) {
                     name="Description"
                     rows={3}
                     placeholder="Add more details..."
-                    className="w-full resize-none rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-indigo-400"
+                    className={`w-full resize-none rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-indigo-400 ${
+                        error.Description
+                            ? "border-red-400"
+                            : "border-slate-200"
+                        }`}
                     />
+                    {error.Description && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {error.Description[0]}
+                        </p>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -110,8 +169,17 @@ function AddTask({ onClose }) {
                         onChange={handleChange}
                         name="Due_date"
                         type="date"
-                        className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm text-slate-700 outline-none focus:border-indigo-400"
+                        className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-700 outline-none ${
+                            error.Due_date
+                                ? "border-red-400"
+                                : "border-slate-200"
+                        }`}
                     />
+                    {error.Due_date && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {error.Due_date[0]}
+                        </p>
+                    )}
                     </div>
                     <div>
                     <label className="mb-1.5 block text-xs font-bold tracking-wide text-slate-500">
@@ -121,8 +189,17 @@ function AddTask({ onClose }) {
                         onChange={handleChange}
                         name="Time"
                         type="time"
-                        className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm text-slate-700 outline-none focus:border-indigo-400"
+                        className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-700 outline-none ${
+                            error.Time
+                                ? "border-red-400"
+                                : "border-slate-200"
+                        }`}
                     />
+                    {error.Time && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {error.Time[0]}
+                        </p>
+                    )}
                     </div>
                 </div>
 
@@ -135,7 +212,11 @@ function AddTask({ onClose }) {
                             name="Priority"
                             value={formData.Priority}
                             onChange={handleChange}
-                            className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm text-slate-700 outline-none focus:border-indigo-400"
+                            className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-700 outline-none ${
+                                error.Priority
+                                    ? "border-red-400"
+                                    : "border-slate-200"
+                            }`}
                         >
                             <option>Low</option>
                             <option>Medium</option>
@@ -152,9 +233,9 @@ function AddTask({ onClose }) {
                         onChange={handleChange}
                         className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm text-slate-700 outline-none focus:border-indigo-400"
                     >
-                        <option value='1'>Work</option>
-                        <option value='2'>Personal</option>
-                        <option value='3'>Study</option>
+                        <option value={1}>Work</option>
+                        <option value={2}>Personal</option>
+                        <option value={3}>Study</option>
                     </select>
                     </div>
                 </div>

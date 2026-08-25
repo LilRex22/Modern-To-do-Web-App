@@ -7,16 +7,27 @@ function UpcomingView() {
     const [draft, setDraft] = useState("");
     const toggleTask = async (id, currentStatus) => {
         try {
+            const token = localStorage.getItem('access');
             await axios.patch(
                 "http://localhost:8000/dashboard/",
                 {
                     id: id,
                     Completed: !currentStatus,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
             );
 
             const response = await axios.get(
-                "http://localhost:8000/dashboard/"
+                "http://localhost:8000/dashboard/",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
             );
 
             setTasks(response.data);
@@ -37,7 +48,13 @@ function UpcomingView() {
     useEffect(()=>{
             const fetchTasks = async ()=> {
                 try{
-                    const response = await axios.get('http://localhost:8000/dashboard/')
+                    const token = localStorage.getItem('access');
+                    const response = await axios.get('http://localhost:8000/dashboard/',
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
                     setTasks(response.data)
                     console.log(response.data)
                 }catch(error){

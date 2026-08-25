@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { CheckCircle2, User, Lock } from "lucide-react";
+import { CheckCircle2, User, Lock} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import MessageBox from "../components/message";
 
-function Login() {
-    const [rememberMe, setRememberMe] = useState(false);
+function SignUp() {
     const navigate = useNavigate();
     const [error, setError] = useState({});
-    const [message, setMessage] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [message, setMessage] = useState(null)
 
     const [formData, setFormData] = useState({
         username: "",
         password: "",
+        confirm_password: "",
     });
 
     const handleChange = (e) => {
@@ -23,34 +23,60 @@ function Login() {
         });
     };
 
-
-    // the login logic
-    const logUserIn = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError({});
+        setError({}); // Clear previous errors
+
+        if (formData.username === "") {
+            setError({
+                username: ["Username is required."],
+            });
+            return;
+        }
+
+        if (formData.password === "") {
+            setError({
+                password: ["Password is required."],
+            });
+            return;
+        }
+
+        if (formData.password.length < 8) {
+            setError({
+                password: ["Password must be at least 8 characters long."],
+            });
+            return;
+        }
+
+        if (formData.confirm_password === "") {
+            setError({
+                confirm_password: ["Please confirm your password."],
+            });
+            return;
+        }
+
+        if (formData.password !== formData.confirm_password) {
+            setError({
+                confirm_password: ["Passwords do not match."],
+            });
+            return;
+        }
+
         setSubmitting(true);
         try {
-            const response = await axios.post("http://localhost:8000/api/token/", {
-                username: formData.username,
-                password: formData.password,
-            });
-            console.log(response.data);
-            localStorage.setItem("access", response.data.access);
-            localStorage.setItem("refresh", response.data.refresh);
+            await axios.post("http://localhost:8000/api/register/", formData);
             setMessage({
-                text: "Logged in successfully!",
+                text: "Registration successful! Please log in.",
                 type: "success",
             });
-            navigate("/dashboard/today");
+            navigate("/");
         } catch (error) {
             if (error.response?.data) {
                 setError(error.response.data);
             }
-            console.error("login failed:", error.response?.data?.detail);
+            console.error("Error registering:", error.response?.data.detail);
             setMessage({
-                text:
-                    error.response?.data?.detail ||
-                    "An error occurred while adding the classroom.",
+                text: error.response?.data?.detail || "An error occurred during registration.",
                 type: "error",
             });
         } finally {
@@ -75,13 +101,13 @@ function Login() {
                 </div>
                 <h1 className="text-2xl font-bold text-slate-900">TaskFlow</h1>
                 <p className="text-sm text-slate-500 mt-1">
-                    Sign in to your productivity hub
+                    Sign Up for TaskFlow in one click
                 </p>
                 </div>
 
                 {/* Card */}
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
-                    <form onSubmit={logUserIn} className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         {/* Username */}
                         <div>
                             <label
@@ -98,12 +124,14 @@ function Login() {
                                 type="text"
                                 value={formData.username}
                                 onChange={handleChange}
-                                placeholder="Enter your username"
+                                placeholder="Enter a username"
                                 className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 />
                             </div>
                             {error.username && (
-                                <p className="text-red-500 text-sm mt-1">{error.username[0]}</p>
+                                <p className="text-red-500 text-sm mt-1">
+                                    {error.username[0]}
+                                </p>
                             )}
                         </div>
 
@@ -116,12 +144,6 @@ function Login() {
                                 >
                                 PASSWORD
                                 </label>
-                                <a
-                                href="#"
-                                className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
-                                >
-                                Forgot password?
-                                </a>
                             </div>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -136,22 +158,39 @@ function Login() {
                                 />
                             </div>
                             {error.password && (
-                                <p className="text-red-500 text-sm mt-1">{error.password[0]}</p>
+                                <p className="text-red-500 text-sm mt-1">
+                                    {error.password[0]}
+                                </p>
                             )}
                         </div>
 
-                        {/* Remember me */}
-                        <div className="flex items-center gap-2">
-                            <input
-                                id="remember"
-                                type="checkbox"
-                                checked={rememberMe}
-                                onChange={(e) => setRememberMe(e.target.checked)}
-                                className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                            />
-                            <label htmlFor="remember" className="text-sm text-slate-600">
-                                Remember me for 30 days
-                            </label>
+                        {/* Confirm Password */}
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <label
+                                htmlFor="confirm_password"
+                                className="text-xs font-semibold tracking-wide text-slate-600"
+                                >
+                                CONFIRM PASSWORD
+                                </label>
+                            </div>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                <input
+                                id="confirm_password"
+                                type="password"
+                                name="confirm_password"
+                                value={formData.confirm_password}
+                                onChange={handleChange}
+                                placeholder="••••••••"
+                                className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                />
+                            </div>
+                            {error.confirm_password && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {error.confirm_password[0]}
+                                </p>
+                            )}
                         </div>
 
                         {/* Submit */}
@@ -159,13 +198,13 @@ function Login() {
                         type="submit"
                         className="w-full py-2.5 rounded-lg bg-indigo-700 text-white text-sm font-semibold hover:bg-indigo-800 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
-                            {submitting ? "Signing in…" : "Sign in"}
+                        {submitting ? "Signing up…" : "Sign up"}
                         </button>
 
                         <small className="block text-xs font-medium text-slate-500 text-center mt-4">
-                            Don't have an account?{" "}
-                            <Link to='signUp' className="text-indigo-600 hover:text-indigo-700">
-                                Sign up
+                            Already have an account?{" "}
+                            <Link to='/' className="text-indigo-600 hover:text-indigo-700">
+                                Login
                             </Link>
                         </small>
                     </form>
@@ -175,4 +214,4 @@ function Login() {
     );
     }
 
-export default Login;
+export default SignUp;

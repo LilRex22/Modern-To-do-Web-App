@@ -1,8 +1,10 @@
 import { CheckSquare, ClipboardList, CheckCircle2, MoreVertical, } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import { useOutletContext } from "react-router-dom";
 
 function TodayView() {
+    const { refreshKey } = useOutletContext();
     const [tasks, setTasks] = useState({
         overdue: [],
         today: [],
@@ -16,7 +18,12 @@ function TodayView() {
     useEffect(()=>{
         const fetchTasks = async ()=> {
             try{
-                const response = await axios.get('http://localhost:8000/dashboard/')
+                const token = localStorage.getItem('access');
+                const response = await axios.get('http://localhost:8000/dashboard/', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
                 setTasks(response.data)
                 console.log(response.data)
             }catch(error){
@@ -24,20 +31,31 @@ function TodayView() {
             }
         }
         fetchTasks()
-    }, [])
+    }, [refreshKey])
 
     const toggleTask = async (id, currentStatus) => {
         try {
+            const token = localStorage.getItem('access');
             await axios.patch(
                 "http://localhost:8000/dashboard/",
                 {
                     id: id,
                     Completed: !currentStatus,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
             );
 
             const response = await axios.get(
-                "http://localhost:8000/dashboard/"
+                "http://localhost:8000/dashboard/",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
             );
 
             setTasks(response.data);
@@ -57,9 +75,16 @@ function TodayView() {
         { label: "REMAINING", value: remaining, unit: "to go", icon: ClipboardList, color: "text-indigo-600" },
     ];
 
+    // funtion to sort the today's tasks according to due time and not time of creation
+    const sortedTodayTasks = [...tasks.today].sort((a, b) => {
+        const dateTimeA = new Date(`${a.Due_date}T${a.Time}`);
+        const dateTimeB = new Date(`${b.Due_date}T${b.Time}`);
+
+        return dateTimeA - dateTimeB;
+    });
+
     return (
         <div className="p-10">
-
             <p className="text-sm text-slate-400">
                 {new Date().toLocaleDateString("en-US", {
                     weekday: "long",
@@ -116,7 +141,7 @@ function TodayView() {
                             No tasks for today.
                         </li>
                     ) : (
-                        tasks.today.map((task) => (
+                        sortedTodayTasks.map((task) => (
                             <li
                                 key={task.id}
                                 className="flex items-start gap-4 border-b border-slate-100 px-6 py-4 last:border-b-0"
