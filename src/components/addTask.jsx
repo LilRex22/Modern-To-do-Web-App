@@ -55,7 +55,7 @@ function AddTask({ onClose, onTaskCreated }) {
 
         try{
             const token = localStorage.getItem("access");
-            const response = await axios.post('http://localhost:8000/dashboard/create_task', formData,
+            const response = await axios.post('https://modern-to-do-web-app-api.onrender.com/dashboard/create_task', formData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

@@ -23,7 +23,7 @@ function Layout() {
             try {
                 const token = localStorage.getItem("access");
                 const response = await axios.get(
-                    "http://localhost:8000/api/current_user/",
+                    "https://modern-to-do-web-app-api.onrender.com/api/current_user/",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

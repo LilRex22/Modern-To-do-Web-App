@@ -64,7 +64,7 @@ function SignUp() {
 
         setSubmitting(true);
         try {
-            await axios.post("http://localhost:8000/api/register/", formData);
+            await axios.post("https://modern-to-do-web-app-api.onrender.com/api/register/", formData);
             setMessage({
                 text: "Registration successful! Please log in.",
                 type: "success",

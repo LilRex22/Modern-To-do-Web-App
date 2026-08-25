@@ -27,7 +27,7 @@ function TodayView() {
                 const token = localStorage.getItem("access");
 
                 const response = await axios.get(
-                    "http://localhost:8000/dashboard/",
+                    "https://modern-to-do-web-app-api.onrender.com/dashboard/",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ function TodayView() {
             const token = localStorage.getItem("access");
 
             await axios.patch(
-                "http://localhost:8000/dashboard/",
+                "https://modern-to-do-web-app-api.onrender.com/dashboard/",
                 {
                     id: id,
                     Completed: !currentStatus,
@@ -64,7 +64,7 @@ function TodayView() {
             );
 
             const response = await axios.get(
-                "http://localhost:8000/dashboard/",
+                "https://modern-to-do-web-app-api.onrender.com/dashboard/",
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

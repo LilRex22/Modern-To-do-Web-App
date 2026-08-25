@@ -10,7 +10,7 @@ function AllTask() {
         try {
                 const token = localStorage.getItem('access');
                 const response = await axios.get(
-                    "http://localhost:8000/dashboard/all_tasks", 
+                    "https://modern-to-do-web-app-api.onrender.com/dashboard/all_tasks", 
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
