@@ -65,7 +65,7 @@ function AddTask({ onClose, onTaskCreated }) {
             console.log(response)
             console.log(formData)
             setMessage({
-                text: "Classroom added successfully!",
+                text: "Task added successfully!",
                 type: "success"
             });
 
