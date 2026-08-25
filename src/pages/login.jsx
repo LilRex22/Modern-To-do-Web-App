@@ -50,7 +50,7 @@ function Login() {
             setMessage({
                 text:
                     error.response?.data?.detail ||
-                    "An error occurred while adding the classroom.",
+                    "An error occurred while logging in.",
                 type: "error",
             });
         } finally {

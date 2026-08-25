@@ -82,7 +82,7 @@ function Layout() {
             <div className="flex h-screen w-full bg-slate-50 font-sans text-slate-900">
                 <Sidebar onAddTask={() => setShowModal(true)} />
 
-                <main className="flex-1 overflow-y-auto">
+                <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">
                     <TopBar title={title} subtitle={subtitle} />
                     <Outlet context={{ refreshKey }}/>
                 </main>

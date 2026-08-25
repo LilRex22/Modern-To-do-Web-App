@@ -99,7 +99,7 @@ function AddTask({ onClose, onTaskCreated }) {
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
+        <div className="px-7 fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
             {message && (
                 <MessageBox
                     message={message.text}
