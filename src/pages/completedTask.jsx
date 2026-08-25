@@ -28,7 +28,7 @@ function CompletedTask() {
     }, []);
 
     return (
-        <div className="flex flex-col gap-8 p-10 ">
+        <div className="flex min-w-0 flex-col gap-4 p-4 sm:gap-6 sm:p-6 lg:gap-8 lg:p-10">
             {completedTasks.map((task) => {
 
                 return (

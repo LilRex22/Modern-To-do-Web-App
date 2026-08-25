@@ -101,8 +101,8 @@ function UpcomingView() {
 
 
     return (
-        <div className="p-10">
-        <div className="mb-8 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-3.5">
+        <div className="p-4 sm:p-6 lg:p-10">
+        <div className="mb-8 flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-3 sm:gap-3 sm:px-5 sm:py-3.5">
             <Plus size={18} className="text-slate-400" />
             <input
             value={draft}
@@ -110,7 +110,7 @@ function UpcomingView() {
             placeholder="Add a task for upcoming days... (Press Enter)"
             className="flex-1 text-sm text-slate-600 outline-none placeholder:text-slate-400"
             />
-            <button className="flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-600">
+            <button className="hidden items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-600 sm:flex">
             <Calendar size={14} />
             Date
             </button>
@@ -136,7 +136,7 @@ function UpcomingView() {
                 {group.tasks.map((task) => (
                     <div
                         key={task.id}
-                        className={`flex items-center gap-4 rounded-xl border border-slate-200 border-l-4 bg-white px-5 py-4`}
+                        className={`flex items-start gap-3 rounded-xl border border-slate-200 border-l-4 bg-white px-4 py-4 sm:gap-4 sm:px-5`}
                         >
                         <button
                             onClick={canComplete ?() => toggleTask(task.id, task.Completed) : null}
@@ -150,7 +150,7 @@ function UpcomingView() {
                             {task.Completed && <CheckSquare size={13} />}
                         </button>
 
-                        <div>
+                        <div className="min-w-0 flex-1">
                             <p className={`font-medium ${
                                 task.Completed
                                     ? "text-slate-400 line-through"
@@ -159,7 +159,7 @@ function UpcomingView() {
                                 {task.Title}
                             </p>
 
-                            <p className={`mt-1 text-sm ${
+                            <p className={`mt-1 wrap-break-word text-sm ${
                                 task.Completed
                                     ? "text-slate-300 line-through"
                                     : "text-slate-500"
@@ -167,7 +167,7 @@ function UpcomingView() {
                                 {task.Description}
                             </p>
 
-                            <div className="mt-1 flex items-center gap-4 text-sm">
+                            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
 
                                 <span className="flex items-center gap-1.5 font-medium text-slate-400">
                                     <Clock size={14} />
