@@ -7,8 +7,18 @@ import {
     CheckCircle2
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Sidebar({ onAddTask }) {
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        localStorage.removeItem("user");
+
+        navigate("/");
+    };
+
     const navItems = [
         {
             path: "/dashboard/today",
@@ -151,8 +161,10 @@ function Sidebar({ onAddTask }) {
                     </p>
                 </div>
 
-                <button className="text-slate-400 hover:text-slate-600">
-                    <Settings size={18} />
+                <button
+                onClick={handleLogout}
+                className="flex items-center text-slate-400 hover:text-slate-600 gap-1 text-sm font-medium transition">
+                    <Settings size={18} /> log out
                 </button>
 
             </div>
@@ -181,6 +193,15 @@ function Sidebar({ onAddTask }) {
                     );
                 })}
 
+                {/* Mobile Settings */}
+                <button
+                    onClick={handleLogout}
+                    className="flex h-full flex-col items-center justify-center gap-0.5 px-2 text-[10px] font-medium text-slate-500 transition hover:text-red-500"
+                >
+                    <Settings size={20} />
+                    <span>Logout</span>
+                </button>
+
                 {/* Mobile Add Task */}
                 <button
                     onClick={onAddTask}
@@ -199,7 +220,6 @@ function Sidebar({ onAddTask }) {
                 >
                     <Plus size={21} strokeWidth={2.5} />
                 </button>
-
             </nav>
 
         </aside>
